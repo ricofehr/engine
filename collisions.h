@@ -1,34 +1,43 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<GL/glut.h>
-#include "fonctionMath.h"
+#ifndef COLLISION_H
+#define COLLISION_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "bmath.h"
 
-void ajout_cube_coord(int pres,int rot,int trs);
-void chge_coord(int i,int j,int l);
-void collision_cam();
-point intersec(vecteur vcm,point ctre,int cpt,int pol);
-GLfloat Dist_entre_pts(point A,point B);
-void trve_norm_k(int cpt,int mat,point cre,float ry);
-point milieu(point p,point p1);
-int est_sur_face(point inter,int cpt,int mat);
-int est_sur_seg(droite d, point p);
-point intersec_2_drseg(droite d,droite e,int );
-point intersec_seg_droite_sur(droite d,droite e,int cpt);
-float *multim(float *a, float *b);
-GLfloat *inverse_matr(GLfloat *mat);
-point intersec_3_plans(vecteur *n,float *k);
-void colli_polyg();
+#if defined __APPLE__
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glut.h>
+#endif
+
+void initcube(int pres, int rot, int translate);
+int isonface(struct point inter, int cpt, int mat);
+int isonsegment(struct line d, struct point p);
+struct point intersecline(struct line d, struct line e, int cpt);
+void initnormk(int cpt, int mat, struct point center, float rayon);
+struct line centerpolygon(float *ray, int cpt);
+GLfloat *multim(GLfloat *a, GLfloat *b);
+void computecoord(int i, int j, int l);
+struct point intersec(struct vector vcm, struct point ctr, int cpt, int pol);
+void collisioncam();
+struct point intersec2segments(struct line u, struct line v);
+GLfloat *inversematr(GLfloat *mat);
+struct point intersec3plans(struct vector *n, float *k);
+int issamedir(struct vector v1, struct vector v2);
+struct point intersecline(struct line d, struct line e, int cpt);
+GLfloat *inversematr(GLfloat *mat);
 void coli(int numero);
-point intersec_seg_droite_sur_rec(droite e,int cpt);
-void init_angle_trans();
-droite centre_polyg(float *ray,int cpt);
-GLfloat *matrtrans(vecteur u,float fact);
-void inter_pol();
+struct point intersecquad(struct line e,int cpt);
+void initangletrans();
+GLfloat *matrtrans(struct vector u, float fact);
+void interpol();
 GLfloat *transpose(GLfloat *matr);
-point inter_2seg(droite u,droite v);
-void copy_Poly4(Poly4* src,Poly4* dest,int mal);
-point sur_droite(droite d,float fact);
-void change_trans(int nb,float fctdep,float fact);
-void suppr_Poly4(Poly4* *sprime);
-void suppr_Pt_equa(Poly4 *sprime);
+void copypoly4(struct poly4* src, struct poly4* dest, int mal);
+struct point ontheline(struct line d, float fact);
+void changetrans(int nb, float fctdep, float fact);
+void deletepoly4(struct poly4* *sprime);
+void deletepoly4__(struct poly4 *sprime);
+
+#endif

@@ -1,14 +1,29 @@
+#ifndef LOADER_H
+#define LOADER_H
+
 #include <stdio.h>
-#include <GL/glut.h>
+#include "bmath.h"
 
+#if defined __APPLE__
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glut.h>
+#endif
 
+#define EXIT {fclose(bmp);return;}
+#define CTOI(C) (*(int*)&C)	//Char* to int
 
+/* Global variables used by loader */
+extern unsigned int *texturenames;
+extern struct poly4 *tabpoly4;
+extern struct poly4 *polinit;
+extern int cntpoly4;
+extern int cntload;
+extern struct move col;
 
+void loadBMP(char *filename, int indtex);
+void loadtextures(const char filename[]);
+void loadpoly4();
+void displaypoly4();
 
-#define EXIT {fclose(fichier);return;}
-#define CTOI(C) (*(int*)&C)	//récupère en int un nombre pointé par un char*
-
-void LoadBMP(char *File,int numtex);
-void LoadTextures(const char fichier[]);
-void LoadPoly4();
-void AffichePoly4();
+#endif

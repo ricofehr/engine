@@ -3,6 +3,8 @@
 !/bin/.keep
 /bak
 /doc
+textures.txt
+polygones4.txt
 
 # Object files
 *.o
