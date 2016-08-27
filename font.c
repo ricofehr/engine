@@ -2,26 +2,46 @@
 #include <string.h>
 #include "font.h"
 
-/* drawString: display a string s in opengl */
-void drawString (char *s)
-{
-  unsigned int i;
-  for (i = 0; i < strlen(s); i++)
-    glutBitmapCharacter (GLUT_BITMAP_HELVETICA_10, s[i]);
-};
+/**
+*	draw_string: display a string
+*	@s: string to display
+*
+*	Display a string at current position of cursor
+*/
 
-/* drawStringBig: display a string s in opengl with big size font */
-void drawStringBig (char *s)
+static void draw_string(char *s)
 {
-  unsigned int i;
-  for (i = 0; i < strlen(s); i++)
-    glutBitmapCharacter (GLUT_BITMAP_TIMES_ROMAN_24 , s[i]);
-};
+	unsigned int i;
 
-/* move2dText: move text cursor on x,y coordiantes into 3d viewport */
-void move2dText(int x, int y)
+	for (i = 0; i < strlen(s); i++)
+		glutBitmapCharacter (GLUT_BITMAP_HELVETICA_10, s[i]);
+}
+
+/**
+*	draw_string_big - display a string in big size font
+*	@s: string to display
+*
+*	Display a string with bigger font at current position of cursor
+*/
+
+static void draw_string_big(char *s)
 {
+	unsigned int i;
 
+	for (i = 0; i < strlen(s); i++)
+		glutBitmapCharacter (GLUT_BITMAP_TIMES_ROMAN_24 , s[i]);
+}
+
+/**
+*	move_2dtext - move text cursor on x,y coordinates into 3d viewport
+*	@x: position x of cursor
+*	@y: position y of cursor
+*
+*	Move current cursor at x and y positions
+*/
+
+static void move_2dtext(int x, int y)
+{
 	glPushAttrib(GL_TRANSFORM_BIT | GL_VIEWPORT_BIT) ;
 
 	glMatrixMode(GL_PROJECTION) ;
@@ -44,8 +64,17 @@ void move2dText(int x, int y)
 	glPopAttrib() ;
 }
 
-/* glText2d: get a string chaine and display it into opengl veiwport with x,y coordinates */
-void glText2d(int x, int y, const char *chaine,...){
+/**
+*	write_2dtext: display a string into the opengpl viewport
+*	@x: the x position of the text
+*	@y: the y position of the text
+*	@chaine: the string to display
+*
+*	Display string into opengpl viewport.
+*/
+
+static void write_2dtext(int x, int y, const char *chaine,...)
+{
 
 	char texte[256] ;
 	va_list argsPtr ;
@@ -54,18 +83,24 @@ void glText2d(int x, int y, const char *chaine,...){
 	vsprintf(texte, chaine, argsPtr) ;
 	va_end(argsPtr) ;
 
-	move2dText(x, y) ;
-	drawStringBig (texte);
+	move_2dtext(x, y) ;
+	draw_string_big (texte);
 }
 
-/* Display FPS on the screen */
-void drawFPS(){
+/**
+*	draw_fps - Display FPS on the screen
+*
+*	Display the count of frame per second (FPS) on the opengl viewport.
+*/
+
+void draw_fps()
+{
 
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f) ;
-	glText2d(400, 275, "FPS : %d",fps()) ;
+	write_2dtext(400, 275, "FPS : %d",fps()) ;
 	glColor3f(1.0f, 0.0f, 0.0f) ;
-	glText2d(750, 275, "VIE : %d",100) ;
+	write_2dtext(750, 275, "VIE : %d",100) ;
 	glColor3f(1.0f, 1.0f, 1.0f) ;
 	glEnable(GL_TEXTURE_2D);
 }

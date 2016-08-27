@@ -13,17 +13,8 @@
 #define EXIT {fclose(bmp);return;}
 #define CTOI(C) (*(int*)&C)	//Char* to int
 
-/* Global variables used by loader */
-extern unsigned int *texturenames;
-extern struct poly4 *tabpoly4;
-extern struct poly4 *polinit;
-extern int cntpoly4;
-extern int cntload;
-extern struct move col;
-
-void loadBMP(char *filename, int indtex);
-void loadtextures(const char filename[]);
-void loadpoly4();
-void displaypoly4();
+void load_textures(const char filename[]);
+void load_poly4();
+void display_poly4();
 
 #endif
