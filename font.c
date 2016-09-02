@@ -1,3 +1,8 @@
+/*
+* Manage texts display on opengl viewport
+* @author Eric Fehr (ricofehr@nextdeploy.io, @github: ricofehr)
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include "font.h"
@@ -14,7 +19,7 @@ static void draw_string(char *s)
 	unsigned int i;
 
 	for (i = 0; i < strlen(s); i++)
-		glutBitmapCharacter (GLUT_BITMAP_HELVETICA_10, s[i]);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, s[i]);
 }
 
 /**
@@ -29,7 +34,7 @@ static void draw_string_big(char *s)
 	unsigned int i;
 
 	for (i = 0; i < strlen(s); i++)
-		glutBitmapCharacter (GLUT_BITMAP_TIMES_ROMAN_24 , s[i]);
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24 , s[i]);
 }
 
 /**
@@ -42,26 +47,23 @@ static void draw_string_big(char *s)
 
 static void move_2dtext(int x, int y)
 {
-	glPushAttrib(GL_TRANSFORM_BIT | GL_VIEWPORT_BIT) ;
+	glPushAttrib(GL_TRANSFORM_BIT | GL_VIEWPORT_BIT);
 
-	glMatrixMode(GL_PROJECTION) ;
-	glPushMatrix() ;
-	glLoadIdentity() ;
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 
-	glMatrixMode(GL_MODELVIEW) ;
-	glPushMatrix() ;
-	glLoadIdentity() ;
+	glViewport(x - 1, y - 1, 2, 2);
+	glRasterPos4f(0.0f, 0.0f, 0.0f, 1.0f);
 
-	y = 480 - 40 - y ;
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
 
-	glViewport(x-1, y-1, 0, 0) ;
-	glRasterPos4f(0.0f, 0.0f, 0.0f, 1.0f) ;
-
-	glPopMatrix() ;
-	glMatrixMode(GL_PROJECTION) ;
-	glPopMatrix() ;
-
-	glPopAttrib() ;
+	glPopAttrib();
 }
 
 /**
@@ -75,16 +77,15 @@ static void move_2dtext(int x, int y)
 
 static void write_2dtext(int x, int y, const char *chaine,...)
 {
+	char texte[256];
+	va_list argsPtr;
 
-	char texte[256] ;
-	va_list argsPtr ;
+	va_start(argsPtr, chaine);
+	vsprintf(texte, chaine, argsPtr);
+	va_end(argsPtr);
 
-	va_start(argsPtr, chaine) ;
-	vsprintf(texte, chaine, argsPtr) ;
-	va_end(argsPtr) ;
-
-	move_2dtext(x, y) ;
-	draw_string_big (texte);
+	move_2dtext(x, y);
+	draw_string_big(texte);
 }
 
 /**
@@ -97,10 +98,7 @@ void draw_fps()
 {
 
 	glDisable(GL_TEXTURE_2D);
-	glColor3f(1.0f, 1.0f, 1.0f) ;
-	write_2dtext(400, 275, "FPS : %d",fps()) ;
-	glColor3f(1.0f, 0.0f, 0.0f) ;
-	write_2dtext(750, 275, "VIE : %d",100) ;
-	glColor3f(1.0f, 1.0f, 1.0f) ;
+	glColor3f(1.0f, 1.0f, 1.0f);
+	write_2dtext(500, 600, "FPS : %d",fps());
 	glEnable(GL_TEXTURE_2D);
 }
