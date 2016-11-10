@@ -8,7 +8,7 @@ and manages collisions with room and between theirs.
 
 Requirements
 - In Mac os, Opengl and GLUT Framework. This ones are bundled with Xcode.
-- In Linux, libglut-dev package.
+- In Linux, libglut-dev or freeglut3-dev package.
 
 Once this library are available, just execute "make" for compile binary program
 ```
