@@ -1,10 +1,10 @@
 # Project files to ignore
-/bin
-!/bin/.keep
+/bin/*
+!/bin/.gitkeep
 /bak
 /doc
 textures.txt
-polygones4.txt
+universe.txt
 
 # Object files
 *.o

@@ -1,3 +1,8 @@
+/*
+* Header file for font.c
+* @author Eric Fehr (ricofehr@nextdeploy.io, @github: ricofehr)
+*/
+
 #ifndef FONT_H
 #define FONT_H
 

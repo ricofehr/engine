@@ -1,13 +1,17 @@
+/*
+* File loader functions
+* @author Eric Fehr (ricofehr@nextdeploy.io, @github: ricofehr)
+*/
+
 #include "loader.h"
+#include "polygon.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 /* Global variables used by loader */
 extern unsigned int *texturenames;
-extern struct poly4 *tabpoly4;
-extern struct poly4 *polinit;
-extern int cntpoly4;
-extern int cntload;
+extern struct polygon *poly_head;
+extern int debug;
 
 /**
 *	load_bmp - load a bmp texture
@@ -51,11 +55,11 @@ static void load_bmp(char *filename, int indtex)
 	dpos = CTOI(header[0x0A]);
 	dsize = CTOI(header[0x22]);
 	width = CTOI(header[0x12]);
-	height = CTOI(header[0x16]);	
+	height = CTOI(header[0x16]);
 	type = GL_UNSIGNED_BYTE;
 	format = GL_RGB;
 	rgb = 3;
-	
+
 	/* If dsize or dpos are missing, init them */
 	if (dsize == 0)
 		dsize = width * height * components;
@@ -85,25 +89,29 @@ static void load_bmp(char *filename, int indtex)
 
 	/* Texture settings */
 	glBindTexture(GL_TEXTURE_2D, indtex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	/* Send texture to opengl */
 	glTexImage2D
-	( 	
-		GL_TEXTURE_2D, 	//target
-		0,				//mipmap level
-		rgb,		    //colors count
-		width,			//width
-		height,			//height
-		0,			 	//border padding
-		format,			//colors type
-		type,			//coding type
-		data			//Image
+	(
+		GL_TEXTURE_2D, 	/* target */
+		0,		/* mipmap level */
+		rgb,		/* colors count */
+		width,		/* width */
+		height,		/* height */
+		0,		/* border padding */
+		format,		/* colors type */
+		type,		/* coding type */
+		data		/* Image */
 	);
 
 	/* debug purpose */
-	printf("%s\n\n", filename);
+	if (debug)
+		printf("Texture filename: %s\n", filename);
 }
 
 /**
@@ -115,23 +123,22 @@ static void load_bmp(char *filename, int indtex)
 */
 
 void load_textures(const char filename[])
-{	
+{
 	FILE *f;
 	int cnt = 0;
 	int i = 0;
 	char texture[50];
-	
 	f = fopen(filename, "rb");
 	if (!f)
 		return;
-	/* Get texture count and load them */	
+	/* Get texture count and load them */
 	fscanf(f, "%d\n", &cnt);
 	if ((texturenames = (unsigned int*) malloc(sizeof(unsigned int) * cnt)) == NULL)
 		return;
 
 	glGenTextures(cnt+1, texturenames);
 	for (i = 0; i < cnt; i++) {
-		fscanf(f, "%s", texture) ;
+		fscanf(f, "%s\n", texture) ;
 		load_bmp(texture, i+1);
 	}
 	fclose(f);
@@ -144,90 +151,49 @@ void load_textures(const char filename[])
 *	Open a file a laod polygons coordinates from this.
 */
 
-void load_poly4()
+void load_universe()
 {
 	FILE *f;
-	int i = 0, j = 0;
-	
-	f = fopen("txt/polygones4.txt", "rb");
+	int i = 0, j = 0, cntload, texture;
+	struct polygon *current, *poly;
+	GLfloat pts[16];
+
+	f = fopen("txt/universe.txt", "rb");
 	if (!f) {
-		printf("txt/polygones4.txt is not found\n");
+		printf("txt/universe.txt is not found\n");
 		return;
 	}
     	/* read count of polygons */
 	fscanf(f, "%d\n", &cntload);
-	if ((polinit = (struct poly4*) realloc(polinit, sizeof(struct poly4)*cntload)) == NULL){
-		printf("Malloc issue\n");
-		return;
-	}
 
+	current = poly_head;
 	/* init each quad with coordinates */
-	while (i < cntload) {
-		polinit[i].indpol = 0;
-		/* Sides number of quad */
-		polinit[i].cntsides = 4;
-		/* 3 coordinates (x, y, z) for each point + transparent value */
-		polinit[i].pt = (GLfloat *) malloc(16 * sizeof(GLfloat));
-		for (j = 0; j < 16; j++)
-            		polinit[i].pt[j] = 1.0f;
+	for (i = 0; i < cntload; i++) {
+		/* Alpha (opacity) = 1 */
+		for (j = 3; j < 16; j+=4)
+            		pts[j] = 1.0f;
 		/* Read quad coordiantes from file (let transparent with init 1.0 value) */
 		fscanf(f, "%d %f %f %f %f %f %f %f %f %f %f %f %f",
-		    &polinit[i].texture,
-		    &polinit[i].pt[0], &polinit[i].pt[1], &polinit[i].pt[2],
-		    &polinit[i].pt[4], &polinit[i].pt[5], &polinit[i].pt[6],
-		    &polinit[i].pt[8], &polinit[i].pt[9], &polinit[i].pt[10],
-		    &polinit[i].pt[12], &polinit[i].pt[13], &polinit[i].pt[14]);
-		/* Move and collision flags */
-		polinit[i].move = 0;
-		polinit[i].col = -1;
-		/* Translation and angle number */
-		polinit[i].indtrans = polinit[i].indangle = -1;
-		/* Quad index */
-		polinit[i].indpol = i;
-		polinit[i].cntfaces = 6;
-		/* Equation direction */
-		polinit[i].equa = NULL;
-		i++;
+		    &texture,
+		    &pts[0], &pts[1], &pts[2],
+		    &pts[4], &pts[5], &pts[6],
+		    &pts[8], &pts[9], &pts[10],
+		    &pts[12], &pts[13], &pts[14]);
+
+		poly = polygon_init(i, 4, 0, 0, 6, i, texture, pts);
+		if (current == NULL) {
+			poly->next = NULL;
+			poly->prev = NULL;
+			poly_head = poly;
+		} else {
+			poly->next = poly_head;
+			poly->prev = current;
+			poly_head->prev = poly;
+			current->next = poly;
+		}
+		current = poly;
 	}
-	
+
 	fclose(f);
-	return;
-}
-
-/**
-*	display_poly4 - Shape quad polygons in opengl
-*	
-*	Dispaly all cubes in opengl viewport.
-*/
-
-void display_poly4()
-{
-	int i,j;
-
-	for (i = 0; i < cntpoly4; i++) {
-		if (i == 1)
-			continue;
-
-		if (tabpoly4[i].texture == 2)
-			j = 10;
-		else
-			j = 3;
-		/* Set texture */
-		glBindTexture(GL_TEXTURE_2D, texturenames[tabpoly4[i].texture]);
-		/* Shape quad polygon */
-		glBegin(GL_QUADS);
-		glTexCoord2i(j, 0);
-		glVertex3f(tabpoly4[i].pt[0], tabpoly4[i].pt[1], tabpoly4[i].pt[2]);
-		
-		glTexCoord2i(j, j);
-		glVertex3f(tabpoly4[i].pt[4], tabpoly4[i].pt[5], tabpoly4[i].pt[6]);
-		
-		glTexCoord2i(0, j);
-		glVertex3f(tabpoly4[i].pt[8], tabpoly4[i].pt[9], tabpoly4[i].pt[10]);
-		
-		glTexCoord2i(0, 0);
-		glVertex3f(tabpoly4[i].pt[12], tabpoly4[i].pt[13], tabpoly4[i].pt[14]);
-		glEnd();
-	}
 	return;
 }
