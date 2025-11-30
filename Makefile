@@ -37,4 +37,5 @@ polygon.o: polygon.c polygon.h vector.h
 main.o: main.c loader.h polygon.h
 	gcc -Wno-deprecated -c main.c
 
-clean : rm -f src/*.o bin/$(EXENAME) 2>/dev/null
+clean :
+	rm -f *.o bin/$(EXENAME) 2>/dev/null
