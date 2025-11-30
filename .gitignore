@@ -1,3 +1,9 @@
+# Project files to ignore
+/bin
+!/bin/.keep
+/bak
+/doc
+
 # Object files
 *.o
 *.ko
