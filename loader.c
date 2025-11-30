@@ -2,19 +2,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* loadBMP: load a bmp texture from File, and with indtex index */
-void loadBMP(char *filename, int indtex)
+/* Global variables used by loader */
+extern unsigned int *texturenames;
+extern struct poly4 *tabpoly4;
+extern struct poly4 *polinit;
+extern int cntpoly4;
+extern int cntload;
+
+/**
+*	load_bmp - load a bmp texture
+*	@filename: texture file
+*	@indtex: polygon index targetting for the texture
+*
+*	Load a texture from a bmp file and apply it on the polygon
+*	indexed by indtex
+*/
+
+static void load_bmp(char *filename, int indtex)
 {
-	unsigned char	*data;
-	FILE			*bmp;
-	unsigned char	header[0x36];
+	unsigned char *data;
+	FILE *bmp;
+	unsigned char header[0x36];
 	/* Data position and size */
-	GLuint			dpos, dsize, rgb;
-	GLint			components;
-	GLsizei			width, height;
-	GLenum			format, type;
-	int             x = 0;
-	unsigned char   t;
+	GLuint dpos, dsize, rgb;
+	GLint components;
+	GLsizei width, height;
+	GLenum format, type;
+	int x = 0;
+	unsigned char t;
 
 	/* Read the file and his header */
 	bmp = fopen(filename, "rb");
@@ -91,9 +106,16 @@ void loadBMP(char *filename, int indtex)
 	printf("%s\n\n", filename);
 }
 
-/* loadtextures: load textures used by engine */
-void loadtextures(const char filename[]){
-	
+/**
+*	load_textures - load textures used by engine
+*	@filename:  txt files who list textures used for polygons
+*
+*	Open a txt file and get the texture filenames. Then, load these thanks
+*	to load_bmp function
+*/
+
+void load_textures(const char filename[])
+{	
 	FILE *f;
 	int cnt = 0;
 	int i = 0;
@@ -108,18 +130,22 @@ void loadtextures(const char filename[]){
 		return;
 
 	glGenTextures(cnt+1, texturenames);
-	while (i < cnt) {
+	for (i = 0; i < cnt; i++) {
 		fscanf(f, "%s", texture) ;
-		loadBMP(texture, i+1);
-		i++;
+		load_bmp(texture, i+1);
 	}
 	fclose(f);
 	return;
 }
 
-/* loadpoly4: load coordiantes of quad polygon from txt file */
-void loadpoly4() {
+/**
+*	load_poly4 - load polygons from txt file
+*
+*	Open a file a laod polygons coordinates from this.
+*/
 
+void load_poly4()
+{
 	FILE *f;
 	int i = 0, j = 0;
 	
@@ -168,9 +194,16 @@ void loadpoly4() {
 	return;
 }
 
-/* displaypoly4: Shape quad polygons in opengl */
-void displaypoly4(){
+/**
+*	display_poly4 - Shape quad polygons in opengl
+*	
+*	Dispaly all cubes in opengl viewport.
+*/
+
+void display_poly4()
+{
 	int i,j;
+
 	for (i = 0; i < cntpoly4; i++) {
 		if (i == 1)
 			continue;

@@ -49,22 +49,15 @@ struct move {
 	struct point inter[4];
 };
 
-struct vector initvector(float xx, float yy, float zz);
-struct vector vectorproduct(struct vector v1, struct vector v2);
-struct vector setvector(struct point p1, struct point p2);
-double magnitude(struct vector normal);
-struct vector normalize(struct vector v);
-struct vector rotatepoint(struct vector p, struct point center, struct point rotate);
-void matrixmult(float *a, float b[4][4]);
-float dot(struct vector v1, struct vector v2);
-double anglevectors(struct vector v1, struct vector v2);
-GLfloat computedist(struct point p1, struct point p2);
+struct vector vector_init(float xx, float yy, float zz);
+struct vector vector_product(struct vector v1, struct vector v2);
+struct vector vector_set(struct point p1, struct point p2);
+double vector_magnitude(struct vector normal);
+struct vector vector_normalize(struct vector v);
+struct vector point_rotate(struct vector p, struct point center, struct point rotate);
+float vector_dot(struct vector v1, struct vector v2);
+double vector_angle(struct vector v1, struct vector v2);
+GLfloat segment_dist(struct point p1, struct point p2);
 double absolute(double x);
 int fps();
-/*
-void view(int ix, int iy);
-void deplacement(int direction,int type);
-void souris();
-void test();
-*/
 #endif
