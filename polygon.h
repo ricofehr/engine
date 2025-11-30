@@ -46,6 +46,13 @@ struct polygon {
 	void (*poly_detect_collision)(struct polygon *poly1, struct polygon *poly2);
 };
 
+/* head of linked list */
+extern struct polygon *poly_head;
+/* count of cubes */
+extern int cnt_cubes;
+/* grid mod enabled */
+extern int mode_grid;
+
 void init_transforms();
 void free_transforms();
 void init_cube(int move);

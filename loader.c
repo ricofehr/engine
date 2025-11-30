@@ -8,10 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Global variables used by loader */
-extern unsigned int *texturenames;
-extern struct polygon *poly_head;
-extern int debug;
+unsigned int *texturenames = NULL;
+int debug = 0;
 
 /**
 *	load_bmp - load a bmp texture

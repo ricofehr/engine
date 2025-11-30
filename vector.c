@@ -8,9 +8,6 @@
 #include "vector.h"
 #include "bmath.h"
 
-extern inline double absolute(double x);
-
-
 /**
 *	vector_is_same_dir - check if v1 and v2 are the same direction
 *	@v1: first vector

@@ -20,17 +20,11 @@
 #endif
 
 static int wname;
-int mode_grid = 0;
 static int mode_Zbuffer  = 1;
 static int mat_spec[4] = {1,1,1,1};
 
-int debug = 0; /* change to 1 for enable debug mode */
-GLuint *texturenames = NULL;
-struct polygon *poly_head = NULL;
-
 /* Camera view */
 static float camx=15.0, camy=6.0, camz=-21.0, vuex=0.0, vuey=3.0, vuez=0.0;
-int cnt_cubes = 64; /* Count of generated cube */
 
 void initGL(void);
 void draw(void);

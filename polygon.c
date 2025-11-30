@@ -4,17 +4,16 @@
 */
 
 #include "polygon.h"
+#include "loader.h"
 #include <unistd.h>
 #include <time.h>
 
-/* Global vars used by collision functions */
-extern struct polygon *poly_head;
-extern unsigned int *texturenames;
-extern inline double absolute(double x);
-extern int debug;
-extern int cnt_cubes;
-extern int mode_grid;
+/* Program Global vars */
+int cnt_cubes = 64;
+int mode_grid = 0;
+struct polygon *poly_head = NULL;
 
+/* Polygon global vars */
 static struct vector *init_trans;
 static struct vector *init_vartrans;
 static int is_matrix = 0;
